@@ -1,8 +1,9 @@
 package com.example.schedule_project.dto;
 
-import lombok.Getter;
+import lombok.*;
 import java.time.LocalDateTime;
 
+@Setter
 @Getter
 public class ScheduleRequest {
 

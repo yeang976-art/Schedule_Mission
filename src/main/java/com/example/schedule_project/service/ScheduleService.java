@@ -76,4 +76,16 @@ public class ScheduleService {
                 schedule_entity.getTitle(), schedule_entity.getContent(), schedule_entity.getAuthor(),
                 schedule_entity.getPassword(), schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
     }
+
+    // < 삭제(D) >
+    @Transactional
+    public void delete(Long id) {
+        boolean existence = schedule_repository.existsById(id);
+        if (!existence) {
+            throw new IllegalStateException("존재하지 않는 유저입니다.");
+        }
+
+        // 요청 id에 해당하는 레코드 삭제
+        schedule_repository.deleteById(id);
+    }
 }
