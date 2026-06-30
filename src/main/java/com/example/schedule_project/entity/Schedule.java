@@ -2,16 +2,12 @@ package com.example.schedule_project.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule {
+public class Schedule extends DateManager {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,29 +24,17 @@ public class Schedule {
     @Column(length = 800, nullable = false)
     private String password;
 
-    @CreatedDate
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createAt;
-
-    @LastModifiedDate
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    public Schedule(String title, String content, String author, String password, LocalDateTime createAt, LocalDateTime updatedAt) {
+    public Schedule(String title, String content, String author, String password) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.password = password;
-        this.createAt = createAt;
-        this.updatedAt = updatedAt;
     }
 
-    public void update(String title, String content, String author, String password, LocalDateTime createAt, LocalDateTime updatedAt) {
+    public void update(String title, String content, String author, String password) {
         this.title = title;
         this.content = content;
         this.author = author;
         this.password = password;
-        this.createAt = createAt;
-        this.updatedAt = updatedAt;
     }
 }

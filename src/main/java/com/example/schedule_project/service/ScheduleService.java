@@ -21,7 +21,7 @@ public class ScheduleService {
     public ScheduleResponse save(ScheduleRequest request) {
         // 요청 레코드 추가
         schedule_entity = new Schedule(request.getTitle(), request.getContent(), request.getAuthor(),
-                request.getPassword(), request.getCreateAt(), request.getUpdatedAt());
+                request.getPassword());
 
         // 표에 저장
         Schedule savedSchedule = schedule_repository.save(schedule_entity);
@@ -29,7 +29,7 @@ public class ScheduleService {
         // 추가했다고 알려주기
         return new ScheduleResponse(savedSchedule.getId(),
                 savedSchedule.getTitle(), savedSchedule.getContent(), savedSchedule.getAuthor(),
-                savedSchedule.getPassword(), savedSchedule.getCreateAt(), savedSchedule.getUpdatedAt());
+                savedSchedule.getCreateAt(), savedSchedule.getUpdatedAt());
     }
 
 
@@ -41,7 +41,7 @@ public class ScheduleService {
         // 요청 id에 해당하는 값 알려주기
         return new ScheduleResponse(schedule_entity.getId(),
                 schedule_entity.getTitle(), schedule_entity.getContent(), schedule_entity.getAuthor(),
-                schedule_entity.getPassword(), schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
+                schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
     }
 
     // < 전체 조회(R) >
@@ -54,7 +54,7 @@ public class ScheduleService {
         for (Schedule schedule : schedules) {
             ScheduleResponse dto = new ScheduleResponse(schedule.getId(),
                     schedule.getTitle(), schedule.getContent(), schedule.getAuthor(),
-                    schedule.getPassword(), schedule.getCreateAt(), schedule.getUpdatedAt()
+                    schedule.getCreateAt(), schedule.getUpdatedAt()
             );
             dtos.add(dto);
         }
@@ -69,12 +69,12 @@ public class ScheduleService {
 
         // 요청 id에 해당하는 레코드 덮어쓰기
         schedule_entity.update(request.getTitle(), request.getContent(), request.getAuthor(),
-                request.getPassword(), request.getCreateAt(), request.getUpdatedAt());
+                request.getPassword());
 
         // 수정안 알려주기
         return new ScheduleResponse(schedule_entity.getId(),
                 schedule_entity.getTitle(), schedule_entity.getContent(), schedule_entity.getAuthor(),
-                schedule_entity.getPassword(), schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
+                schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
     }
 
     // < 삭제(D) >
