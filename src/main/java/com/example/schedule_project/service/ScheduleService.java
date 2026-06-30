@@ -44,21 +44,30 @@ public class ScheduleService {
                 schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
     }
 
-    // < 전체 조회(R) >
+    // < 전체 조회(R) > - 작성자명을 기준으로 등록된 일정 목록을 전체 조회
     @Transactional(readOnly = true)
-    public List<ScheduleResponse> getAll() {
-        List<Schedule> schedules = schedule_repository.findAll();
+    public List<ScheduleResponse> getAll(String author) {
+        List<Schedule> schedules;
 
-        // 응답 API에 표 전체 생성
-        List<ScheduleResponse> dtos = new ArrayList<>();
-        for (Schedule schedule : schedules) {
-            ScheduleResponse dto = new ScheduleResponse(schedule.getId(),
-                    schedule.getTitle(), schedule.getContent(), schedule.getAuthor(),
-                    schedule.getCreateAt(), schedule.getUpdatedAt()
-            );
-            dtos.add(dto);
+        // URL에서 작성자명 언급 유무에 따라 조회범위 설정
+        if (author == null || author.isBlank()) {
+            schedules = schedule_repository.findAll();
+        } else {
+            schedules = schedule_repository.findAllByAuthor(author);
         }
-        return dtos;
+
+        // 수정일 기준 내림차순 정렬표 반환
+        return schedules.stream()
+                .sorted(Comparator.comparing(Schedule::getUpdatedAt).reversed())
+                .map(schedule -> new ScheduleResponse(
+                        schedule.getId(),
+                        schedule.getTitle(),
+                        schedule.getContent(),
+                        schedule.getAuthor(),
+                        schedule.getCreateAt(),
+                        schedule.getUpdatedAt()
+                ))
+                .toList();
     }
 
 
@@ -67,15 +76,15 @@ public class ScheduleService {
     public ScheduleResponse update(Long id, ScheduleRequest request) {
         schedule_entity = schedule_repository.findById(id).orElseThrow(() -> new IllegalStateException("존재하지 않는 일정입니다."));
 
-        // 요청 id에 해당하는 레코드 덮어쓰기
-        schedule_entity.update(request.getTitle(), request.getContent(), request.getAuthor(),
-                request.getPassword());
+        // 요청 id에 해당하는 레코드의 일정제목, 작성자명 덮어쓰기
+        schedule_entity.update(request.getTitle(), request.getAuthor());
 
         // 수정안 알려주기
         return new ScheduleResponse(schedule_entity.getId(),
                 schedule_entity.getTitle(), schedule_entity.getContent(), schedule_entity.getAuthor(),
                 schedule_entity.getCreateAt(), schedule_entity.getUpdatedAt());
     }
+
 
     // < 삭제(D) >
     @Transactional

@@ -15,10 +15,10 @@ public abstract class DateManager {
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createAt;
+    private LocalDateTime createAt; // 작성일
 
     @LastModifiedDate
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime updatedAt; // 수정일
 
 }
