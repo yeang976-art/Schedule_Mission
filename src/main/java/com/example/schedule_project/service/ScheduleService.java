@@ -74,6 +74,7 @@ public class ScheduleService {
     // < 수정(U) >
     @Transactional
     public ScheduleResponse update(Long id, ScheduleRequest request) {
+        if (!request.getPassword().equals(schedule_entity.getPassword())) throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
         schedule_entity = schedule_repository.findById(id).orElseThrow(() -> new IllegalStateException("존재하지 않는 일정입니다."));
 
         // 요청 id에 해당하는 레코드의 일정제목, 작성자명 덮어쓰기
@@ -88,7 +89,8 @@ public class ScheduleService {
 
     // < 삭제(D) >
     @Transactional
-    public void delete(Long id) {
+    public void delete(Long id, ScheduleRequest request) {
+        if (!request.getPassword().equals(schedule_entity.getPassword())) throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
         boolean existence = schedule_repository.existsById(id);
         if (!existence) {
             throw new IllegalStateException("존재하지 않는 유저입니다.");
