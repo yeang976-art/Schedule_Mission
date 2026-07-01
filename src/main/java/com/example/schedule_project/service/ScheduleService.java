@@ -2,6 +2,8 @@ package com.example.schedule_project.service;
 
 import com.example.schedule_project.dto.*;
 import com.example.schedule_project.entity.Schedule;
+import com.example.schedule_project.exception.InvalidPasswordException;
+import com.example.schedule_project.exception.ScheduleNotFoundException;
 import com.example.schedule_project.repository.ScheduleRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -14,13 +16,14 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository schedule_repository;
-    private Schedule schedule_entity; // 작업 대상 레코드에 핀꽂는 용도
 
     // < 저장(C) >
     @Transactional
     public ScheduleResponse save(ScheduleRequest request) {
+        validateCreateRequest(request);
+
         // 요청 레코드 추가
-        schedule_entity = new Schedule(request.getTitle(), request.getContent(), request.getAuthor(),
+        Schedule schedule_entity = new Schedule(request.getTitle(), request.getContent(), request.getAuthor(),
                 request.getPassword());
 
         // 표에 저장
@@ -36,7 +39,7 @@ public class ScheduleService {
     // < 단 건 조회(R) >
     @Transactional(readOnly = true)
     public ScheduleResponse getOne(Long id) {
-        schedule_entity = schedule_repository.findById(id).orElseThrow(() -> new IllegalStateException("존재하지 않는 일정입니다."));
+        Schedule schedule_entity = getScheduleEntity(id);
 
         // 요청 id에 해당하는 값 알려주기
         return new ScheduleResponse(schedule_entity.getId(),
@@ -74,8 +77,10 @@ public class ScheduleService {
     // < 수정(U) >
     @Transactional
     public ScheduleResponse update(Long id, ScheduleRequest request) {
-        if (!request.getPassword().equals(schedule_entity.getPassword())) throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-        schedule_entity = schedule_repository.findById(id).orElseThrow(() -> new IllegalStateException("존재하지 않는 일정입니다."));
+        validateUpdateRequest(request);
+
+        Schedule schedule_entity = getScheduleEntity(id);
+        validatePassword(request.getPassword(), schedule_entity.getPassword());
 
         // 요청 id에 해당하는 레코드의 일정제목, 작성자명 덮어쓰기
         schedule_entity.update(request.getTitle(), request.getAuthor());
@@ -90,13 +95,52 @@ public class ScheduleService {
     // < 삭제(D) >
     @Transactional
     public void delete(Long id, ScheduleRequest request) {
-        if (!request.getPassword().equals(schedule_entity.getPassword())) throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
-        boolean existence = schedule_repository.existsById(id);
-        if (!existence) {
-            throw new IllegalStateException("존재하지 않는 유저입니다.");
-        }
+        validatePasswordRequest(request);
+
+        Schedule schedule_entity = getScheduleEntity(id);
+        validatePassword(request.getPassword(), schedule_entity.getPassword());
 
         // 요청 id에 해당하는 레코드 삭제
-        schedule_repository.deleteById(id);
+        schedule_repository.delete(schedule_entity);
+    }
+
+    private Schedule getScheduleEntity(Long id) {
+        return schedule_repository.findById(id)
+                .orElseThrow(() -> new ScheduleNotFoundException("존재하지 않는 일정입니다."));
+    }
+
+    private void validateCreateRequest(ScheduleRequest request) {
+        if (request.getTitle() == null || request.getTitle().isBlank()) {
+            throw new IllegalArgumentException("일정 제목은 필수입니다.");
+        }
+        if (request.getContent() == null || request.getContent().isBlank()) {
+            throw new IllegalArgumentException("일정 내용은 필수입니다.");
+        }
+        if (request.getAuthor() == null || request.getAuthor().isBlank()) {
+            throw new IllegalArgumentException("작성자명은 필수입니다.");
+        }
+        validatePasswordRequest(request);
+    }
+
+    private void validateUpdateRequest(ScheduleRequest request) {
+        if (request.getTitle() == null || request.getTitle().isBlank()) {
+            throw new IllegalArgumentException("수정할 일정 제목은 필수입니다.");
+        }
+        if (request.getAuthor() == null || request.getAuthor().isBlank()) {
+            throw new IllegalArgumentException("수정할 작성자명은 필수입니다.");
+        }
+        validatePasswordRequest(request);
+    }
+
+    private void validatePasswordRequest(ScheduleRequest request) {
+        if (request.getPassword() == null || request.getPassword().isBlank()) {
+            throw new IllegalArgumentException("비밀번호는 필수입니다.");
+        }
+    }
+
+    private void validatePassword(String requestPassword, String savedPassword) {
+        if (!requestPassword.equals(savedPassword)) {
+            throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
+        }
     }
 }
