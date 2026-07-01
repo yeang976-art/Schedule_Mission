@@ -21,4 +21,13 @@ public abstract class DateManager {
     @Column(nullable = false)
     private LocalDateTime updatedAt; // 수정일
 
+    @PrePersist
+    public void onCreate() {
+        this.createAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    protected void updateUpdatedAt() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }
