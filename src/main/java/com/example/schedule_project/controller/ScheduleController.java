@@ -3,8 +3,7 @@ package com.example.schedule_project.controller;
 import com.example.schedule_project.dto.*;
 import com.example.schedule_project.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;

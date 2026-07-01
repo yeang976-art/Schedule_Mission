@@ -2,8 +2,7 @@ package com.example.schedule_project.service;
 
 import com.example.schedule_project.dto.*;
 import com.example.schedule_project.entity.Schedule;
-import com.example.schedule_project.exception.InvalidPasswordException;
-import com.example.schedule_project.exception.ScheduleNotFoundException;
+import com.example.schedule_project.exception.*;
 import com.example.schedule_project.repository.ScheduleRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -104,6 +103,7 @@ public class ScheduleService {
         schedule_repository.delete(schedule_entity);
     }
 
+    // 요청 id에 해당하는 레코드 찾기
     private Schedule getScheduleEntity(Long id) {
         return schedule_repository.findById(id)
                 .orElseThrow(() -> new ScheduleNotFoundException("존재하지 않는 일정입니다."));
@@ -138,6 +138,7 @@ public class ScheduleService {
         }
     }
 
+    // 저장된 비밀번호와 요청 비밀번호 비교
     private void validatePassword(String requestPassword, String savedPassword) {
         if (!requestPassword.equals(savedPassword)) {
             throw new InvalidPasswordException("비밀번호가 일치하지 않습니다.");
