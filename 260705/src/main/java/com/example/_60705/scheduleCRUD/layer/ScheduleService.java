@@ -45,11 +45,13 @@ public class ScheduleService {
     }
 
     @Transactional
-    public UpdateResponseDTO edit(Long id) {
+    public UpdateResponseDTO edit(Long id, UpdateRequestDTO request) {
         entity = getEntity(id);
 
         // 더티채킹 믿고 함수 안쓴다
 
+        entity.setTitle(request.title());
+        entity.setContent(request.content());
         entity.updateDate();
         return new UpdateResponseDTO(entity.getId(), entity.getUser(), entity.getTitle(),
                 entity.getContent(), entity.getUpdatedAt());

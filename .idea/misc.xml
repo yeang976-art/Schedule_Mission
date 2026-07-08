@@ -4,6 +4,11 @@
     <list size="1">
       <item index="0" class="java.lang.String" itemvalue="lombok.Getter" />
     </list>
+    <writeAnnotations>
+      <writeAnnotation name="jakarta.validation.constraints.Email" />
+      <writeAnnotation name="jakarta.validation.constraints.NotBlank" />
+      <writeAnnotation name="jakarta.validation.constraints.Size" />
+    </writeAnnotations>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="FrameworkDetectionExcludesConfiguration">

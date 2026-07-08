@@ -8,6 +8,7 @@ import lombok.*;
 @Entity
 @Table
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Schedule extends DateManager {
     @Id

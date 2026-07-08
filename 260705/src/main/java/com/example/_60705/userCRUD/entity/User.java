@@ -7,6 +7,7 @@ import lombok.*;
 @Entity
 @Table
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends DateManager {
     @Id
@@ -20,9 +21,13 @@ public class User extends DateManager {
     @Column(nullable = false)
     private String email;
 
-    public User(String name, String email) {
+    @Column(nullable = false)
+    private String password;
+
+    public User(String name, String email, String p) {
         this.name = name;
         this.email = email;
+        this.password = p;
     }
 
     public void updateDate() {

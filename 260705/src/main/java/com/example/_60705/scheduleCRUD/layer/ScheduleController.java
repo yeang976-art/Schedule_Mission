@@ -22,17 +22,17 @@ public class ScheduleController {
         return ResponseEntity.ok(service.readOne(id));
     }
 
-    @GetMapping("20020707")
+    @GetMapping("/20020707")
     public ResponseEntity<List<GetResponseDTO>> gets() {
         return ResponseEntity.ok(service.readAll());
     }
 
-    @PutMapping("20020707/{id}")
-    public ResponseEntity<UpdateResponseDTO> put(@PathVariable Long id) {
-        return ResponseEntity.ok(service.edit(id));
+    @PutMapping("/20020707/{id}")
+    public ResponseEntity<UpdateResponseDTO> put(@PathVariable Long id, @RequestBody UpdateRequestDTO request) {
+        return ResponseEntity.ok(service.edit(id, request));
     }
 
-    @DeleteMapping("20020707/{id}")
+    @DeleteMapping("/20020707/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.remove(id);
         return ResponseEntity.noContent().build();

@@ -1,6 +1,8 @@
 package com.example._60705.userCRUD.layer;
 
 import com.example._60705.userCRUD.dto.*;
+import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -12,9 +14,16 @@ import java.util.List;
 public class UserController {
     private final UserService service;
 
-    @PostMapping("/c_user")
-    public ResponseEntity<CreateResponseDTO> post(@RequestBody CreateRequestDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
+    @PostMapping("/c_userSignUp")
+    public ResponseEntity<SignUpResponseDTO> post1(@RequestBody SignUpRequestDTO request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.signUp(request));
+    }
+
+    @PostMapping("/c_userLogin")
+    public ResponseEntity<Void> post2(@Valid @RequestBody LoginRequestDTO request, HttpSession session) {
+        UserSession userSession = service.login(request);
+        session.setAttribute("loginUser", userSession);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/c_user/{id}")
@@ -27,9 +36,11 @@ public class UserController {
         return ResponseEntity.ok(service.readAll());
     }
 
-    @PutMapping("/c_user/{id}")
-    public ResponseEntity<UpdateResponseDTO> put(@PathVariable Long id) {
-        return ResponseEntity.ok(service.edit(id));
+    @PatchMapping("/c_user")
+    public ResponseEntity<UpdateResponseDTO> patch(
+            @SessionAttribute(name = "loginUser", required = false) UserSession session,
+            @RequestBody UpdateRequestDTO request) {
+        return ResponseEntity.ok(service.edit(session.id(), request));
     }
 
     @DeleteMapping("/c_user/{id}")
