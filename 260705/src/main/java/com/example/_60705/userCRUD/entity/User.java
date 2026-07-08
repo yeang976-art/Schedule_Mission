@@ -1,4 +1,4 @@
-package com.example._60705.scheduleCRUD.entity;
+package com.example._60705.userCRUD.entity;
 
 import com.example._60705.DateManager;
 import jakarta.persistence.*;
@@ -8,21 +8,21 @@ import lombok.*;
 @Table
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Schedule extends DateManager {
+public class User extends DateManager {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
     private Long id;
 
-    @Column(nullable = false, length = 200)
-    private String title;
+    @Column(nullable = false)
+    private String name;
 
-    @Column(nullable = false, length = 700)
-    private String content;
+    @Column(nullable = false)
+    private String email;
 
-    public Schedule(String t, String c) {
-        this.title = t;
-        this.content = c;
+    public User(String name, String email) {
+        this.name = name;
+        this.email = email;
     }
 
     public void updateDate() {

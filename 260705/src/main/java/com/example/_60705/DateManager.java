@@ -1,4 +1,4 @@
-package com.example._60705.scheduleCRUD.entity;
+package com.example._60705;
 
 import jakarta.persistence.*;
 import lombok.*;
