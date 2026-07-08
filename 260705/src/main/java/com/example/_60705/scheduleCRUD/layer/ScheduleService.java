@@ -17,18 +17,20 @@ public class ScheduleService {
 
     @Transactional
     public CreateResponseDTO create(CreateRequestDTO request) {
-        entity = new Schedule(request.title(), request.content());
+        entity = new Schedule(request.user(), request.title(), request.content());
 
         Schedule saveEntity = repository.save(entity);
 
-        return new CreateResponseDTO(saveEntity.getId(), saveEntity.getTitle(), saveEntity.getContent(), saveEntity.getCreateAt());
+        return new CreateResponseDTO(saveEntity.getId(), saveEntity.getUser(), saveEntity.getTitle(),
+                saveEntity.getContent(), saveEntity.getCreateAt());
     }
 
     @Transactional(readOnly = true)
     public GetResponseDTO readOne(Long id) {
         entity = getEntity(id);
 
-        return new GetResponseDTO(entity.getId(), entity.getTitle(), entity.getContent(), entity.getCreateAt(), entity.getUpdatedAt());
+        return new GetResponseDTO(entity.getId(), entity.getUser(), entity.getTitle(), entity.getContent(),
+                entity.getCreateAt(), entity.getUpdatedAt());
     }
 
     @Transactional(readOnly = true)
@@ -36,7 +38,8 @@ public class ScheduleService {
         List<Schedule> list = repository.findAll();
 
         return list.stream()
-                .map(elements -> new GetResponseDTO(elements.getId(), elements.getTitle(),
+                .map(elements
+                        -> new GetResponseDTO(elements.getId(), elements.getUser(), elements.getTitle(),
                         elements.getContent(), elements.getCreateAt(), elements.getUpdatedAt()))
                 .toList();
     }
@@ -48,7 +51,8 @@ public class ScheduleService {
         // 더티채킹 믿고 함수 안쓴다
 
         entity.updateDate();
-        return new UpdateResponseDTO(entity.getId(), entity.getTitle(), entity.getContent(), entity.getUpdatedAt());
+        return new UpdateResponseDTO(entity.getId(), entity.getUser(), entity.getTitle(),
+                entity.getContent(), entity.getUpdatedAt());
     }
 
     @Transactional
