@@ -1,6 +1,5 @@
 package com.example._60705.userCRUD.layer;
 
-import com.example._60705.exceptions.*;
 import com.example._60705.userCRUD.dto.*;
 import com.example._60705.userCRUD.entity.User;
 import lombok.*;
@@ -72,6 +71,7 @@ public class UserService {
     }
 
     private User checkData(Long id) {
-        return repository.findById(id).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자"));
+        return repository.findById(id).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "존재하지 않는 일정"));
     }
 }
