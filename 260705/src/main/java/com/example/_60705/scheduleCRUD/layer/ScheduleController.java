@@ -5,7 +5,6 @@ import com.example._60705.scheduleCRUD.dto.*;
 import lombok.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
