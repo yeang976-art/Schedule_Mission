@@ -16,31 +16,25 @@ public class ScheduleService {
 
     @Transactional
     public CreateResponseDTO create(CreateRequestDTO request) {
-        Schedule s = new Schedule(request.user(), request.title(), request.content());
+        Schedule s = new Schedule(request.title(), request.content());
 
         Schedule saveEntity = repository.save(s);
 
-        return new CreateResponseDTO(saveEntity.getId(), saveEntity.getUser(), saveEntity.getTitle(),
-                saveEntity.getContent(), saveEntity.getCreateAt());
+        return CreateResponseDTO.from(saveEntity);
     }
 
     @Transactional(readOnly = true)
     public GetResponseDTO readOne(Long id) {
         Schedule s = getEntity(id);
 
-        return new GetResponseDTO(s.getId(), s.getUser(), s.getTitle(), s.getContent(),
-                s.getCreateAt(), s.getUpdatedAt());
+        return GetResponseDTO.from(s);
     }
 
     @Transactional(readOnly = true)
     public List<GetResponseDTO> readAll() {
         List<Schedule> list = repository.findAll();
 
-        return list.stream()
-                .map(elements
-                        -> new GetResponseDTO(elements.getId(), elements.getUser(), elements.getTitle(),
-                        elements.getContent(), elements.getCreateAt(), elements.getUpdatedAt()))
-                .toList();
+        return list.stream().map(GetResponseDTO::from).toList();
     }
 
     @Transactional
@@ -52,7 +46,7 @@ public class ScheduleService {
         s.setTitle(request.title());
         s.setContent(request.content());
         s.updateDate();
-        return new UpdateResponseDTO(s.getId(), s.getUser(), s.getTitle(), s.getContent(), s.getUpdatedAt());
+        return UpdateResponseDTO.from(s);
     }
 
     @Transactional

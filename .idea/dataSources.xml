@@ -13,13 +13,5 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="jdbc:mysql://localhost:3306/schedule_mission?serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8 [DEBUG]" group="​Application" uuid="62c259c0-9297-4ca7-a300-6513d5cf9dfb">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <imported>true</imported>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/schedule_mission?serverTimezone=Asia/Seoul&amp;characterEncoding=UTF-8</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
   </component>
 </project>

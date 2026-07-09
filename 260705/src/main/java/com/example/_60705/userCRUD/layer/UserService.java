@@ -4,6 +4,7 @@ import com.example._60705.exceptions.*;
 import com.example._60705.userCRUD.dto.*;
 import com.example._60705.userCRUD.entity.User;
 import lombok.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
 
@@ -26,10 +27,11 @@ public class UserService {
     // 로그인
     @Transactional(readOnly = true)
     public UserSession login(LoginRequestDTO request) {
-        User u = repository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자"));
+        User u = repository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다."));
 
         if (!u.getPassword().equals(request.getPassword())) {
-            throw new TokenMismatchException("이메일 또는 비밀번호가 일치하지 않습니다.");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "이메일 또는 비밀번호가 일치하지 않습니다.");
         }
 
         return new UserSession(u.getId(), u.getName(), u.getEmail());

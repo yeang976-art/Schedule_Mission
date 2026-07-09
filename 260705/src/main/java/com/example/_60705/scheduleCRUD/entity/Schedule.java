@@ -26,8 +26,7 @@ public class Schedule extends DateManager {
     @Column(nullable = false, length = 700)
     private String content;
 
-    public Schedule(User u, String t, String c) {
-        this.user = u;
+    public Schedule(String t, String c) {
         this.title = t;
         this.content = c;
     }
