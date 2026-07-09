@@ -1,0 +1,15 @@
+package com.example._60705.scheduleCRUD.dto;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record CreateRequestDTO(
+        @NotBlank(message = "제목은 필수입니다.")
+        @Size(max = 200, message = "제목은 200자 이하로 입력해주세요.")
+        String title,
+
+        @NotBlank(message = "내용은 필수입니다.")
+        @Size(max = 700, message = "내용은 700자 이하로 입력해주세요.")
+        String content
+) {
+}
