@@ -36,8 +36,13 @@ public class ScheduleController {
     }
 
     @PutMapping("/20020707/{id}")
-    public ResponseEntity<UpdateResponseDTO> put(@PathVariable Long id, @RequestBody UpdateRequestDTO request) {
-        return ResponseEntity.ok(service.edit(id, request));
+    public ResponseEntity<UpdateResponseDTO> put(
+            @PathVariable Long id,
+            @RequestBody UpdateRequestDTO request,
+            @SessionAttribute(name = "loginUser", required = false) UserSession loginUser
+    ) {
+        Long loginUserId = loginUser == null ? null : loginUser.id();
+        return ResponseEntity.ok(service.edit(id, request, loginUserId));
     }
 
     @DeleteMapping("/20020707/{id}")

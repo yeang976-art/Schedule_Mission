@@ -47,7 +47,7 @@ public class ScheduleService {
     }
 
     @Transactional
-    public UpdateResponseDTO edit(Long id, UpdateRequestDTO request) {
+    public UpdateResponseDTO edit(Long id, UpdateRequestDTO request, Long userId) {
         Schedule s = getEntity(id);
 
         // 더티채킹 믿고 함수 안쓴다
