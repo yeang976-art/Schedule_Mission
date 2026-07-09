@@ -39,13 +39,19 @@ public class UserController {
     @PatchMapping("/c_user")
     public ResponseEntity<UpdateResponseDTO> patch(
             @SessionAttribute(name = "loginUser", required = false) UserSession session,
-            @RequestBody UpdateRequestDTO request) {
-        return ResponseEntity.ok(service.edit(session.id(), request));
+            @Valid @RequestBody UpdateRequestDTO request
+    ) {
+        Long loginUserId = session == null ? null : session.id();
+        return ResponseEntity.ok(service.edit(loginUserId, request));
     }
 
     @DeleteMapping("/c_user/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.remove(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @SessionAttribute(name = "loginUser", required = false) UserSession session
+    ) {
+        Long loginUserId = session == null ? null : session.id();
+        service.remove(id, loginUserId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.*;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -41,17 +41,19 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public List<GetResponseDTO> readAll() {
-        List<Schedule> list = repository.findAll();
+        List<Schedule> list = repository.findAllByOrderByUpdatedAtDesc();
 
         return list.stream().map(GetResponseDTO::from).toList();
     }
 
     @Transactional
     public UpdateResponseDTO edit(Long id, UpdateRequestDTO request, Long userId) {
+        checkLogin(userId);
+
         Schedule s = getEntity(id);
+        checkWriter(s, userId);
 
-        // 더티채킹 믿고 함수 안쓴다
-
+        // 값 변경 후 트랜잭션 종료 시 더티 체킹으로 반영된다.
         s.setTitle(request.title());
         s.setContent(request.content());
         s.updateDate();
@@ -59,8 +61,11 @@ public class ScheduleService {
     }
 
     @Transactional
-    public void remove(Long id) {
+    public void remove(Long id, Long userId) {
+        checkLogin(userId);
+
         Schedule s = getEntity(id);
+        checkWriter(s, userId);
 
         repository.delete(s);
     }
@@ -73,6 +78,12 @@ public class ScheduleService {
     private void checkLogin(Long loginUserId) {
         if (loginUserId == null) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+    }
+
+    private void checkWriter(Schedule schedule, Long loginUserId) {
+        if (!schedule.getUser().getId().equals(loginUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "작성자만 수정/삭제할 수 있습니다.");
         }
     }
 }

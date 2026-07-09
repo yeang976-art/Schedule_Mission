@@ -1,7 +1,8 @@
 package com.example._60705.scheduleCRUD.layer;
 
-import com.example._60705.userCRUD.dto.UserSession;
 import com.example._60705.scheduleCRUD.dto.*;
+import com.example._60705.userCRUD.dto.UserSession;
+import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ public class ScheduleController {
 
     @PostMapping("/20020707")
     public ResponseEntity<CreateResponseDTO> post(
-            @RequestBody CreateRequestDTO request,
+            @Valid @RequestBody CreateRequestDTO request,
             @SessionAttribute(name = "loginUser", required = false) UserSession loginUser
     ) {
         Long loginUserId = loginUser == null ? null : loginUser.id();
@@ -38,7 +39,7 @@ public class ScheduleController {
     @PutMapping("/20020707/{id}")
     public ResponseEntity<UpdateResponseDTO> put(
             @PathVariable Long id,
-            @RequestBody UpdateRequestDTO request,
+            @Valid @RequestBody UpdateRequestDTO request,
             @SessionAttribute(name = "loginUser", required = false) UserSession loginUser
     ) {
         Long loginUserId = loginUser == null ? null : loginUser.id();
@@ -46,8 +47,12 @@ public class ScheduleController {
     }
 
     @DeleteMapping("/20020707/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        service.remove(id);
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id,
+            @SessionAttribute(name = "loginUser", required = false) UserSession loginUser
+    ) {
+        Long loginUserId = loginUser == null ? null : loginUser.id();
+        service.remove(id, loginUserId);
         return ResponseEntity.noContent().build();
     }
 }

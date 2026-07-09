@@ -1,5 +1,6 @@
 package com.example._60705.userCRUD.layer;
 
+import com.example._60705.scheduleCRUD.layer.ScheduleRepository;
 import com.example._60705.userCRUD.dto.*;
 import com.example._60705.userCRUD.entity.User;
 import lombok.*;
@@ -14,10 +15,15 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
+    private final ScheduleRepository scheduleRepository;
 
     // 회원가입
     @Transactional
     public SignUpResponseDTO signUp(SignUpRequestDTO request) {
+        if (repository.findByEmail(request.getEmail()).isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 사용 중인 이메일입니다.");
+        }
+
         User u = new User(request.getName(), request.getEmail(), request.getPassword());
         User saveUser = repository.save(u);
 
@@ -44,7 +50,7 @@ public class UserService {
         return new GetResponseDTO(u.getId(), u.getName(), u.getEmail(), u.getCreateAt(), u.getUpdatedAt());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<GetResponseDTO> readAll() {
         List<User> list = repository.findAll();
 
@@ -55,8 +61,10 @@ public class UserService {
 
     // 이름 변경
     @Transactional
-    public UpdateResponseDTO edit(Long id, UpdateRequestDTO request) {
-        User u = checkData(id);
+    public UpdateResponseDTO edit(Long loginUserId, UpdateRequestDTO request) {
+        checkLogin(loginUserId);
+
+        User u = checkData(loginUserId);
         u.setName(request.getName());
         u.updateDate();
 
@@ -64,14 +72,29 @@ public class UserService {
     }
 
     @Transactional
-    public void remove(Long id) {
-        User u = checkData(id);
+    public void remove(Long id, Long loginUserId) {
+        checkLogin(loginUserId);
+        checkSameUser(id, loginUserId);
 
+        User u = checkData(id);
+        scheduleRepository.deleteByUser_Id(id);
         repository.delete(u);
     }
 
     private User checkData(Long id) {
         return repository.findById(id).orElseThrow(() -> new ResponseStatusException(
-                HttpStatus.NOT_FOUND, "존재하지 않는 일정"));
+                HttpStatus.NOT_FOUND, "존재하지 않는 사용자"));
+    }
+
+    private void checkLogin(Long loginUserId) {
+        if (loginUserId == null) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "로그인이 필요합니다.");
+        }
+    }
+
+    private void checkSameUser(Long id, Long loginUserId) {
+        if (!id.equals(loginUserId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "본인 계정만 수정/삭제할 수 있습니다.");
+        }
     }
 }
