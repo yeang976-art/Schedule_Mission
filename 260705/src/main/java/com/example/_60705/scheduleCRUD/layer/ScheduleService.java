@@ -13,13 +13,12 @@ import java.util.*;
 @RequiredArgsConstructor
 public class ScheduleService {
     private final ScheduleRepository repository;
-    private Schedule entity;
 
     @Transactional
     public CreateResponseDTO create(CreateRequestDTO request) {
-        entity = new Schedule(request.user(), request.title(), request.content());
+        Schedule s = new Schedule(request.user(), request.title(), request.content());
 
-        Schedule saveEntity = repository.save(entity);
+        Schedule saveEntity = repository.save(s);
 
         return new CreateResponseDTO(saveEntity.getId(), saveEntity.getUser(), saveEntity.getTitle(),
                 saveEntity.getContent(), saveEntity.getCreateAt());
@@ -27,10 +26,10 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public GetResponseDTO readOne(Long id) {
-        entity = getEntity(id);
+        Schedule s = getEntity(id);
 
-        return new GetResponseDTO(entity.getId(), entity.getUser(), entity.getTitle(), entity.getContent(),
-                entity.getCreateAt(), entity.getUpdatedAt());
+        return new GetResponseDTO(s.getId(), s.getUser(), s.getTitle(), s.getContent(),
+                s.getCreateAt(), s.getUpdatedAt());
     }
 
     @Transactional(readOnly = true)
@@ -46,22 +45,21 @@ public class ScheduleService {
 
     @Transactional
     public UpdateResponseDTO edit(Long id, UpdateRequestDTO request) {
-        entity = getEntity(id);
+        Schedule s = getEntity(id);
 
         // 더티채킹 믿고 함수 안쓴다
 
-        entity.setTitle(request.title());
-        entity.setContent(request.content());
-        entity.updateDate();
-        return new UpdateResponseDTO(entity.getId(), entity.getUser(), entity.getTitle(),
-                entity.getContent(), entity.getUpdatedAt());
+        s.setTitle(request.title());
+        s.setContent(request.content());
+        s.updateDate();
+        return new UpdateResponseDTO(s.getId(), s.getUser(), s.getTitle(), s.getContent(), s.getUpdatedAt());
     }
 
     @Transactional
     public void remove(Long id) {
-        entity = getEntity(id);
+        Schedule s = getEntity(id);
 
-        repository.delete(entity);
+        repository.delete(s);
     }
 
     private Schedule getEntity(Long id) {

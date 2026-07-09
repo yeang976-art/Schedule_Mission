@@ -3,7 +3,6 @@ package com.example._60705.userCRUD.layer;
 import com.example._60705.exceptions.*;
 import com.example._60705.userCRUD.dto.*;
 import com.example._60705.userCRUD.entity.User;
-import jakarta.validation.Valid;
 import lombok.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.*;
@@ -14,30 +13,33 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository repository;
-    private User entity;
 
     // 회원가입
     @Transactional
     public SignUpResponseDTO signUp(SignUpRequestDTO request) {
-        entity = new User(request.getName(), request.getEmail(), request.getPassword());
-        User saveUser = repository.save(entity);
+        User u = new User(request.getName(), request.getEmail(), request.getPassword());
+        User saveUser = repository.save(u);
 
         return new SignUpResponseDTO(saveUser.getId(), saveUser.getName(), saveUser.getEmail(), saveUser.getCreateAt());
     }
 
     // 로그인
     @Transactional(readOnly = true)
-    public UserSession login(@Valid LoginRequestDTO request) {
-        entity = repository.findUserName(request.getEmail()).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자"));
+    public UserSession login(LoginRequestDTO request) {
+        User u = repository.findByEmail(request.getEmail()).orElseThrow(() -> new NotFoundException("존재하지 않는 사용자"));
 
-        return new UserSession(entity.getId(), entity.getName(), entity.getEmail());
+        if (!u.getPassword().equals(request.getPassword())) {
+            throw new TokenMismatchException("이메일 또는 비밀번호가 일치하지 않습니다.");
+        }
+
+        return new UserSession(u.getId(), u.getName(), u.getEmail());
     }
 
     @Transactional(readOnly = true)
     public GetResponseDTO readOne(Long id) {
-        entity = checkData(id);
+        User u = checkData(id);
 
-        return new GetResponseDTO(entity.getId(), entity.getName(), entity.getEmail(), entity.getCreateAt(), entity.getUpdatedAt());
+        return new GetResponseDTO(u.getId(), u.getName(), u.getEmail(), u.getCreateAt(), u.getUpdatedAt());
     }
 
     @Transactional
@@ -52,18 +54,18 @@ public class UserService {
     // 이름 변경
     @Transactional
     public UpdateResponseDTO edit(Long id, UpdateRequestDTO request) {
-        entity = checkData(id);
-        entity.setName(request.getName());
-        entity.updateDate();
+        User u = checkData(id);
+        u.setName(request.getName());
+        u.updateDate();
 
-        return new UpdateResponseDTO(entity.getId(), entity.getName(), entity.getEmail(), entity.getUpdatedAt());
+        return new UpdateResponseDTO(u.getId(), u.getName(), u.getEmail(), u.getUpdatedAt());
     }
 
     @Transactional
     public void remove(Long id) {
-        entity = checkData(id);
+        User u = checkData(id);
 
-        repository.delete(entity);
+        repository.delete(u);
     }
 
     private User checkData(Long id) {
